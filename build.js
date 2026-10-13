@@ -115,7 +115,9 @@ function shell({ title, description, path: p, body, active, ld, noindex }) {
 <meta name="description" content="${esc(description)}">
 ${noindex ? '<meta name="robots" content="noindex">' : ""}
 <link rel="canonical" href="${url}">
-<link rel="icon" type="image/webp" href="/favicon.webp">
+<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">
+<link rel="icon" type="image/png" sizes="72x72" href="/favicon.png">
+<link rel="apple-touch-icon" href="/favicon.png">
 <meta property="og:type" content="website"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(description)}"><meta property="og:url" content="${url}"><meta property="og:site_name" content="Re:Daily"><meta property="og:locale" content="id_ID">
 ${HERO ? `<meta property="og:image" content="${SITE}/img/${HERO}">` : ""}
 <meta name="twitter:card" content="${HERO ? "summary_large_image" : "summary"}">
