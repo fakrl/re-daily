@@ -147,14 +147,16 @@ const subject = { "@type": "CafeOrCoffeeShop", name: "Re:Daily Coffee", address:
 const page = (name, url, desc) => ({ "@context": "https://schema.org", "@type": "WebPage", name, url: SITE + url, description: desc, inLanguage: "id", mainEntity: { ...subject, url: SITE + "/" }, isPartOf: { "@type": "WebSite", name: "Re:Daily", url: SITE + "/" } });
 const card = ([n, pr, d]) => `<article class="card"><span class="price">${pr}k</span><h3>${esc(n)}</h3><p>${esc(d)}</p></article>`;
 const LOCAL = process.env.LOCAL_PREVIEW === "1";
-const w = (f, c) => {
-  if (LOCAL && f.endsWith(".html")) {
-    const pre = "../".repeat(f.split("/").length - 1);
-    c = c.replace(/href="\/(menu|lokasi)\/(#[a-z]+)?"/g, (m, p, h) => `href="${pre}${p}/index.html${h || ""}"`).replace(/href="\/"/g, `href="${pre}index.html"`)
-      .replace(/(src|href)="\/(img\/|favicon)/g, `$1="${pre}$2`).replace(/url\(\/img\//g, `url(${pre}img/`);
-  }
-  fs.mkdirSync(path.dirname(path.join(OUT, f)), { recursive: true }); fs.writeFileSync(path.join(OUT, f), c);
+// Link internal dibuat relatif supaya situs jalan di domain root maupun sub-path (mis. fakrl.github.io/nama-repo/).
+// LOCAL_PREVIEW=1 menambah index.html untuk dibuka langsung dari file. 404.html dibiarkan absolut.
+const rel = (f, c) => {
+  if (!f.endsWith(".html") || f === "404.html") return c;
+  const pre = "../".repeat(f.split("/").length - 1) || "./";
+  return c
+    .replace(/(href|src)="\/(?!\/)([^"#]*)(#[^"]*)?"/g, (m, a, p, h) => `${a}="${pre}${LOCAL && (p === "" || p.endsWith("/")) ? p + "index.html" : p}${h || ""}"`)
+    .replace(/url\(\/(?!\/)/g, `url(${pre}`);
 };
+const w = (f, c) => { fs.mkdirSync(path.dirname(path.join(OUT, f)), { recursive: true }); fs.writeFileSync(path.join(OUT, f), rel(f, c)); };
 
 fs.rmSync(OUT, { recursive: true, force: true });
 
